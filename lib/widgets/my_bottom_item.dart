@@ -11,9 +11,8 @@ class MyBottomItem extends MyBottomNavigationItem {
   BottomNavigationBarItem buildItem() {
     return BottomNavigationBarItem(
         icon: Container(
-          decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.all(Radius.elliptical(20, 18))),
+          decoration:
+              BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.all(Radius.elliptical(20, 18))),
           padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           child: Icon(
             model.icon,
@@ -39,12 +38,10 @@ class MyBottomItem extends MyBottomNavigationItem {
         title: Container(
           padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
           child: Text(
-            model.name.i18n.toUpperCase(),
+            model.name.i18nn.toUpperCase(),
             style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
           ),
         ),
-        backgroundColor: model.selected
-            ? model.selectedBackgroundColor
-            : model.backgroundColor);
+        backgroundColor: model.selected ? model.selectedBackgroundColor : model.backgroundColor);
   }
 }

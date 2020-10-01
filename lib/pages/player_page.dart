@@ -11,8 +11,7 @@ import 'package:rxdart/rxdart.dart';
 import 'dart:math';
 
 class PlayerPage extends StatelessWidget {
-  final BehaviorSubject<int> _dragPositionSubject =
-      BehaviorSubject.seeded(null);
+  final BehaviorSubject<int> _dragPositionSubject = BehaviorSubject.seeded(null);
   // Future<bool> _loadAlbum() async {
   //   final _queue = <MediaItem>[
   //     MediaItem(
@@ -54,25 +53,23 @@ class PlayerPage extends StatelessWidget {
       actions: {},
       padding: EdgeInsets.symmetric(horizontal: 25),
       child: StreamBuilder<ScreenState>(
-        stream: Rx.combineLatest3<List<MediaItem>, MediaItem, PlaybackState,
-                ScreenState>(
+        stream: Rx.combineLatest3<List<MediaItem>, MediaItem, PlaybackState, ScreenState>(
             AudioService.queueStream,
             AudioService.currentMediaItemStream,
             AudioService.playbackStateStream,
-            (queue, mediaItem, playbackState) =>
-                ScreenState(queue, mediaItem, playbackState)),
+            (queue, mediaItem, playbackState) => ScreenState(queue, mediaItem, playbackState)),
         builder: (context, snapshot) {
           final screenState = snapshot.data;
           final queue = screenState?.queue;
-          final mediaItem = screenState?.mediaItem ??
-              MediaItem(id: null, title: "", album: "", artist: "");
+          final mediaItem = screenState?.mediaItem ?? MediaItem(id: null, title: "", album: "", artist: "");
           final state = screenState?.playbackState;
           var basicState = state?.basicState ?? BasicPlaybackState.none;
           if (basicState == BasicPlaybackState.playing && state.position <= 1)
             basicState = BasicPlaybackState.connecting;
           return Column(
             children: <Widget>[
-              Expanded(
+              Flexible(
+                flex: 3,
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: ShadowWidget(
@@ -89,23 +86,16 @@ class PlayerPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 40,
-              ),
+              Spacer(
+                  // height: 40,
+                  ),
               Container(
                 height: 30,
                 child: mediaItem.title.length < 20
-                    ? Text(mediaItem.title,
-                        style: TextStyle(
-                            color: darker,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600))
+                    ? Text(mediaItem.title, style: TextStyle(color: darker, fontSize: 24, fontWeight: FontWeight.w600))
                     : Marquee(
                         text: mediaItem.title,
-                        style: TextStyle(
-                            color: darker,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600),
+                        style: TextStyle(color: darker, fontSize: 24, fontWeight: FontWeight.w600),
                         scrollAxis: Axis.horizontal,
                         blankSpace: 50.0,
                         velocity: 50.0,
@@ -157,9 +147,7 @@ class PlayerPage extends StatelessWidget {
                         width: 80,
                         height: 80,
                         iconSize: 25,
-                        onTap: mediaItem == queue?.first
-                            ? () => AudioService.seekTo(0)
-                            : AudioService.skipToPrevious,
+                        onTap: mediaItem == queue?.first ? () => AudioService.seekTo(0) : AudioService.skipToPrevious,
                       ),
                     ),
                     Expanded(
@@ -204,9 +192,7 @@ class PlayerPage extends StatelessWidget {
                           width: 80,
                           height: 80,
                           iconSize: 25,
-                          onTap: mediaItem == queue?.last
-                              ? () => AudioService.seekTo(0)
-                              : AudioService.skipToNext),
+                          onTap: mediaItem == queue?.last ? () => AudioService.seekTo(0) : AudioService.skipToNext),
                     ),
                   ],
                 ),
@@ -222,21 +208,17 @@ class PlayerPage extends StatelessWidget {
     );
   }
 
-  Widget positionIndicator(
-      MediaItem mediaItem, PlaybackState state, BasicPlaybackState basicState) {
+  Widget positionIndicator(MediaItem mediaItem, PlaybackState state, BasicPlaybackState basicState) {
     int seekPos;
     return StreamBuilder(
       stream: Rx.combineLatest2<int, int, int>(
-          _dragPositionSubject.stream,
-          Stream.periodic(Duration(milliseconds: 200)),
-          (dragPosition, _) => dragPosition),
+          _dragPositionSubject.stream, Stream.periodic(Duration(milliseconds: 200)), (dragPosition, _) => dragPosition),
       builder: (context, snapshot) {
         int position = 0;
         // print(lastUp);
         // print(state.position);
         // print(lastUp == state.position);
-        if (basicState != BasicPlaybackState.connecting &&
-            basicState != BasicPlaybackState.none)
+        if (basicState != BasicPlaybackState.connecting && basicState != BasicPlaybackState.none)
           position = snapshot.data ?? state.currentPosition;
         int duration = mediaItem?.duration ?? 11;
         return _mySlider(
@@ -287,11 +269,8 @@ class PlayerPage extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return GestureDetector(
         onTapDown: (TapDownDetails a) {
-          if (a.localPosition.dx > 0 &&
-              a.localPosition.dx < constraints.biggest.width) {
-            onChange(
-                (a.localPosition.dx / constraints.biggest.width * maxLength)
-                    .toInt());
+          if (a.localPosition.dx > 0 && a.localPosition.dx < constraints.biggest.width) {
+            onChange((a.localPosition.dx / constraints.biggest.width * maxLength).toInt());
           }
         },
         child: Container(
@@ -305,18 +284,14 @@ class PlayerPage extends StatelessWidget {
                 left: 0,
                 child: Text(
                   _getTime(value),
-                  style: TextStyle(
-                      fontSize: 10, color: dark, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 10, color: dark, fontWeight: FontWeight.bold),
                 ),
               ),
               Positioned(
                 top: 0,
                 right: 0,
-                child: Text(_getTime(maxLength),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: dark,
-                        fontWeight: FontWeight.bold)),
+                child:
+                    Text(_getTime(maxLength), style: TextStyle(fontSize: 10, color: dark, fontWeight: FontWeight.bold)),
               ),
               //background
               Container(
@@ -324,17 +299,13 @@ class PlayerPage extends StatelessWidget {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(color: dim, width: 0.8),
-                    gradient: LinearGradient(
-                        colors: [
-                          dim,
-                          Color.fromRGBO(255, 255, 255, 1)
-                        ],
-                        stops: [
-                          0,
-                          1,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter)),
+                    gradient: LinearGradient(colors: [
+                      dim,
+                      Color.fromRGBO(255, 255, 255, 1)
+                    ], stops: [
+                      0,
+                      1,
+                    ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
               ),
 
               Container(
@@ -344,25 +315,18 @@ class PlayerPage extends StatelessWidget {
                   widthFactor: value / maxLength,
                   child: Container(
                     height: 5,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: mainColor),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: mainColor),
                   ),
                 ),
               ),
 
               GestureDetector(
                 onHorizontalDragUpdate: (a) {
-                  if (a.localPosition.dx > 0 &&
-                      a.localPosition.dx < constraints.biggest.width)
-                    onChange((a.localPosition.dx /
-                            constraints.biggest.width *
-                            maxLength)
-                        .toInt());
+                  if (a.localPosition.dx > 0 && a.localPosition.dx < constraints.biggest.width)
+                    onChange((a.localPosition.dx / constraints.biggest.width * maxLength).toInt());
                 },
                 child: Container(
-                  alignment: Alignment.lerp(Alignment.centerLeft,
-                      Alignment.centerRight, value / maxLength),
+                  alignment: Alignment.lerp(Alignment.centerLeft, Alignment.centerRight, value / maxLength),
                   // left: 100,
                   child: Container(
                     width: 30,
@@ -370,13 +334,7 @@ class PlayerPage extends StatelessWidget {
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Color(0xfff0f0f0),
-                        boxShadow: [
-                          BoxShadow(
-                              color: dim,
-                              offset: Offset(5, 5),
-                              spreadRadius: 1,
-                              blurRadius: 20)
-                        ]),
+                        boxShadow: [BoxShadow(color: dim, offset: Offset(5, 5), spreadRadius: 1, blurRadius: 20)]),
                     child: Padding(
                       padding: const EdgeInsets.all(2.0),
                       child: Container(
@@ -392,21 +350,15 @@ class PlayerPage extends StatelessWidget {
                             padding: const EdgeInsets.all(6.0),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                  colors: [
-                                    Color.fromRGBO(214, 224, 244, 1),
-                                    Colors.white,
-                                  ],
-                                  stops: [
-                                    0,
-                                    1
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight),
+                              gradient: LinearGradient(colors: [
+                                Color.fromRGBO(214, 224, 244, 1),
+                                Colors.white,
+                              ], stops: [
+                                0,
+                                1
+                              ], begin: Alignment.topLeft, end: Alignment.bottomRight),
                             ),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle, color: mainColor)),
+                            child: Container(decoration: BoxDecoration(shape: BoxShape.circle, color: mainColor)),
                           ),
                         ),
                       ),

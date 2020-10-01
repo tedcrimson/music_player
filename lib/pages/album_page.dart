@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_templates/ui_widgets/page.dart';
+import 'package:flutter_ui_templates/ui_widgets/base_page.dart';
 import 'package:music_player/audio_player_task.dart';
 import 'package:music_player/models/album_model.dart';
 import 'package:music_player/pages/my_page.dart';
@@ -12,11 +12,14 @@ import 'package:music_player/widgets/shadow_widget.dart';
 import '../const.dart';
 import '../main.dart';
 
-class AlbumPage extends Page {
+class AlbumPage extends BasePage {
   final Album album;
   AlbumPage(this.album);
   @override
   _AlbumPageState createState() => _AlbumPageState();
+
+  @override
+  String get name => "";
 }
 
 class _AlbumPageState extends State<AlbumPage> {
@@ -70,13 +73,10 @@ class _AlbumPageState extends State<AlbumPage> {
                           child: ClipOval(
                               child: GestureDetector(
                             onTap: () {
-                              if (AudioService?.playbackState?.basicState !=
-                                      BasicPlaybackState.none ||
-                                  AudioService?.playbackState?.basicState !=
-                                      BasicPlaybackState.stopped)
-                                Navigator.of(context, rootNavigator: true).push(
-                                    MaterialPageRoute(
-                                        builder: (_) => PlayerPage()));
+                              if (AudioService?.playbackState?.basicState != BasicPlaybackState.none ||
+                                  AudioService?.playbackState?.basicState != BasicPlaybackState.stopped)
+                                Navigator.of(context, rootNavigator: true)
+                                    .push(MaterialPageRoute(builder: (_) => PlayerPage()));
                             },
                             child: Image.network(
                               album.imageUrl,
@@ -106,9 +106,7 @@ class _AlbumPageState extends State<AlbumPage> {
                   MediaItem track = album.tracks[index];
                   bool isActive = track == currentItem;
                   return Material(
-                    color: isActive
-                        ? Color.fromRGBO(195, 209, 237, 0.6)
-                        : Colors.transparent,
+                    color: isActive ? Color.fromRGBO(195, 209, 237, 0.6) : Colors.transparent,
                     shape: isActive
                         ? RoundedRectangleBorder(
                             side: BorderSide(
@@ -130,8 +128,7 @@ class _AlbumPageState extends State<AlbumPage> {
                         }
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15.0, vertical: 20.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
                         child: Row(
                           children: <Widget>[
                             Expanded(
@@ -143,16 +140,11 @@ class _AlbumPageState extends State<AlbumPage> {
                                     album.tracks[index].title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        color: darker,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500),
+                                    style: TextStyle(color: darker, fontSize: 16, fontWeight: FontWeight.w500),
                                   ),
                                   Text(
                                     album.title,
-                                    style: TextStyle(
-                                        color: dark,
-                                        fontWeight: FontWeight.w500),
+                                    style: TextStyle(color: dark, fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
@@ -179,8 +171,7 @@ class _AlbumPageState extends State<AlbumPage> {
   }
 
   Widget activeButton() {
-    bool isPlaying =
-        AudioService?.playbackState?.basicState != BasicPlaybackState.paused;
+    bool isPlaying = AudioService?.playbackState?.basicState != BasicPlaybackState.paused;
     return MyButton(isPlaying ? Icons.pause : Icons.play_arrow,
         width: 40,
         height: 40,
